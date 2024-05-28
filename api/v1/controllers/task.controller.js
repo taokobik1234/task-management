@@ -53,3 +53,26 @@ module.exports.detail = async (req, res) => {
     }
 
 }
+
+module.exports.changeStatus = async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log(req.body);
+        const status = req.body.status;
+        await Task.updateOne({
+            _id: id
+        },{
+            status: status
+        })
+        res.json({
+            code:200,
+            message:"success"
+        })
+    } catch (error) {
+        res.json({
+            code:400,
+            message:"not exist"
+        })
+    }
+    
+}
