@@ -93,7 +93,19 @@ module.exports.changeMulti = async (req, res) => {
                     message:"success"
                 })
                 break;
-        
+            
+            case "delete":
+                await Task.updateMany({
+                    _id : {$in: ids}
+                },{
+                    deleted: true,
+                    deletedAt: new Date()
+                });
+                res.json({
+                    code:200,
+                    message:"delete success"
+                })
+                break;
             default:
                 res.json({
                     code:400,
@@ -110,4 +122,62 @@ module.exports.changeMulti = async (req, res) => {
         })
     }
     
+}
+
+module.exports.create = async (req, res) => {
+    try {
+        const task = new Task(req.body);
+        const data = await task.save();
+        res.json({
+            code:200,
+            message:"success",
+            data: data
+        })
+    } catch (error) {
+        res.json({
+            code:400,
+            message:"not exist"
+        })
+    }
+}
+
+module.exports.edit = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await Task.updateOne({
+            _id: id
+        },req.body);
+
+        res.json({
+            code:200,
+            message:"success"
+        })
+    } catch (error) {
+        res.json({
+            code:400,
+            message:"Error"
+        })
+    }
+}
+
+module.exports.delete = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await Task.updateOne({
+            _id: id
+        },{
+            deleted: true,
+            deletedAt: new Date()
+        });
+
+        res.json({
+            code:200,
+            message:"success"
+        })
+    } catch (error) {
+        res.json({
+            code:400,
+            message:"Error"
+        })
+    }
 }
