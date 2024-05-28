@@ -57,7 +57,7 @@ module.exports.detail = async (req, res) => {
 module.exports.changeStatus = async (req, res) => {
     try {
         const id = req.params.id;
-        console.log(req.body);
+        // console.log(req.body);
         const status = req.body.status;
         await Task.updateOne({
             _id: id
@@ -68,6 +68,41 @@ module.exports.changeStatus = async (req, res) => {
             code:200,
             message:"success"
         })
+    } catch (error) {
+        res.json({
+            code:400,
+            message:"not exist"
+        })
+    }
+    
+}
+
+module.exports.changeMulti = async (req, res) => {
+    try {
+        const {ids,key,value } = req.body;
+        
+        switch (key) {
+            case "status":
+                await Task.updateMany({
+                    _id : {$in: ids}
+                },{
+                    status:value
+                })
+                res.json({
+                    code:200,
+                    message:"success"
+                })
+                break;
+        
+            default:
+                res.json({
+                    code:400,
+                    message:"not exist"
+                })
+                break;
+        }
+        
+        
     } catch (error) {
         res.json({
             code:400,
