@@ -106,3 +106,34 @@ module.exports.forgotPassword = async(req,res) =>{
         message : "Send Otp via mail"
     })
 }
+
+//[post] /otpPassword
+module.exports.otpPassword = async(req,res) =>{
+    const email = req.body.email;
+    const otp = req.body.otp;
+
+    const result = await ForgotPassword.findOne({
+        email: email,
+        otp: otp
+    });
+
+    if(!result){
+        res.json({
+            code: 400,
+            message : "OTP is not valid"
+        })
+        return;
+    }
+
+    const user = await User.findOne({
+        email: email
+    });
+
+    const token = user.token;
+    res.cookie("token",token);
+    res.json({
+        code: 200,
+        message : "Success authentication",
+        token: token
+    })
+}
