@@ -1,5 +1,8 @@
 const md5 = require("md5");
 const User = require("../models/user.model");
+const ForgotPassword = require("../models/forgot-password.model")
+const generateHelper = require("../../../helpers/generate")
+const sendMailHelper = require("../../../helpers/sendMail")
 //[post] /register
 module.exports.register = async(req,res) =>{
     
@@ -64,5 +67,42 @@ module.exports.login = async(req,res) =>{
         code:200,
         message: "Login success",
         token: token
+    })
+}
+
+//[post] /forgotPassword
+module.exports.forgotPassword = async(req,res) =>{
+    const email = req.body.email;
+    const user = await User.findOne({
+        email : email,
+        deleted: false
+    })
+    if(!user){
+        res.json({
+            code:400,
+            message: "Email does not exist"
+        })
+    }
+
+    const otp = generateHelper.generateRandomNumber(8);
+
+
+    const objectForgotPassword ={
+        email: email,
+        otp : otp,
+        expireAt: Date.now(),
+    }
+
+    const forgotPassword = new ForgotPassword(objectForgotPassword);
+    await forgotPassword.save();
+
+    // send OTP via email user
+    const subject = `OTP to get password`;
+    const html = `
+        OTP authentication to get password is <b>${otp}</b>.Time to authenticate is 3 minute. Do not share with anyone`;
+    sendMailHelper.sendMail(email,subject,html);
+    res.json({
+        code: 200,
+        message : "Send Otp via mail"
     })
 }
