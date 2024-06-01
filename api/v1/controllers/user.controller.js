@@ -20,7 +20,8 @@ module.exports.register = async(req,res) =>{
         const user = new User({
             fullName : req.body.fullName,
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            token: generateHelper.generateRandomString(30)
         });
         user.save();
         const token = user.token;
@@ -169,15 +170,9 @@ module.exports.resetPassword = async(req,res) =>{
 
 //[GET] /detail
 module.exports.detail = async(req,res) =>{
-    const token = req.cookies.token;
-    console.log(token);
-    const user = await User.findOne({
-        token: token,
-        deleted: false
-    }).select("-password -token");
     res.json({
         code: 200,
         message : "Success ",
-        info: user
+        info: req.user
     })
 }
