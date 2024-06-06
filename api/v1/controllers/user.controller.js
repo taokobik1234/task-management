@@ -176,3 +176,14 @@ module.exports.detail = async(req,res) =>{
         info: req.user
     })
 }
+
+//[GET] /list
+module.exports.list = async(req,res) =>{
+
+    const users = await User.find({deleted: false}).select("fullName email");
+    res.json({
+        code: 200,
+        message : "Success ",
+        users: users
+    })
+}

@@ -4,6 +4,10 @@ const paginationHelper = require("../../../helpers/pagination");
 const searchHelper = require("../../../helpers/search");
 module.exports.index = async (req, res) => {
     const find = {
+        $or: [
+            {   createdBy: req.user.id  },
+            {   listUser:req.user.id    },
+        ],
         deleted: false
     }
     if (req.query.status) {
@@ -126,6 +130,7 @@ module.exports.changeMulti = async (req, res) => {
 
 module.exports.create = async (req, res) => {
     try {
+        req.body.createdBy = req.user.id;
         const task = new Task(req.body);
         const data = await task.save();
         res.json({
